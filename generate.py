@@ -10,6 +10,10 @@ height = 1
 x = 0
 y = 0
 z = 0.5
-pyrosim.Send_Cube(name="Box", pos=[x, y, z] , size=[length, width, height])
-pyrosim.Send_Cube(name="Box2", pos=[x, y, z] , size=[length, width, height])
+size_modifier = 1
+for i in range(10):
+    name = "box" + str(i)
+    pyrosim.Send_Cube(name, [x, y, z], [length*size_modifier, width*size_modifier, height*size_modifier])
+    z = z + height
+    size_modifier *= 0.9
 pyrosim.End()
