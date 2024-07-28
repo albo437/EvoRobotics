@@ -8,7 +8,7 @@ p.configureDebugVisualizer(p.COV_ENABLE_GUI, 0)
 
 p.setGravity(0,0,-9.8)
 planeId = p.loadURDF("plane.urdf")
-p.loadSDF("boxes.sdf")
+p.loadSDF("world.sdf")
 for i in range(500):
     time.sleep(1/60)
     print(i)
