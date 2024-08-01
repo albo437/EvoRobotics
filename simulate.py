@@ -1,3 +1,4 @@
 from simulation import SIMULATION
+import constants as c
 
-simulation = SIMULATION(1000)
+simulation = SIMULATION(c.steps)
