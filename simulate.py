@@ -5,6 +5,7 @@ import time
 import numpy as np
 import random
 import matplotlib.pyplot as plt
+import constants as c
 
 physicsClient = p.connect(p.GUI)
 p.setAdditionalSearchPath(pybullet_data.getDataPath())
@@ -16,13 +17,12 @@ robotId = p.loadURDF("body.urdf")
 p.loadSDF("world.sdf")
 pyrosim.Prepare_To_Simulate(robotId)
 
-BackLegAmplitude = np.pi/4
-BackLegFrequency = 1
-BackLegPhaseOffset = 0
-
-FrontLegAmplitude = np.pi/4
-FrontLegFrequency = 1
-FrontLegPhaseOffset = np.pi
+BackLegAmplitude = c.BackLegAmplitude
+BackLegFrequency = c.BackLegFrequency
+BackLegPhaseOffset = c.BackLegPhaseOffset
+FrontLegAmplitude = c.FrontLegAmplitude
+FrontLegFrequency = c.FrontLegFrequency
+FrontLegPhaseOffset = c.FrontLegPhaseOffset
 
 backLegSensorValues = np.zeros(1000)
 frontLegSensorValues = np.zeros(1000)
