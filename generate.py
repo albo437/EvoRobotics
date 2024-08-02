@@ -1,6 +1,6 @@
 import pyrosim.pyrosim as pyrosim
 
-def create_world():
+def generateWorld():
     pyrosim.Start_SDF("world.sdf")
 
     #Dimensions of the box
@@ -15,7 +15,7 @@ def create_world():
     pyrosim.Send_Cube(name = "box", pos = [x, y, z], size = [length, width, height])
     pyrosim.End()
 
-def create_robot():
+def generateBody():
     pyrosim.Start_URDF("body.urdf")
     #Dimensions of the box
     length = 1
@@ -34,5 +34,13 @@ def create_robot():
     
     pyrosim.End()
 
-create_world()
-create_robot()
+def generateBrain():
+    pyrosim.Start_NeuralNetwork("brain.nndf")
+
+    pyrosim.Send_Sensor_Neuron(name = 0 , linkName = "Torso")
+
+    pyrosim.End()
+
+generateWorld()
+generateBody()
+generateBrain()

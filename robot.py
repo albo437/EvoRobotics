@@ -31,3 +31,6 @@ class ROBOT:
     def Act(self, t):
         for jointName in self.motors:
             self.motors[jointName].Set_Value(t, self.robotId)
+    
+    def Think(self):
+        pass
