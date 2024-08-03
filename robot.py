@@ -31,8 +31,11 @@ class ROBOT:
             self.motors[jointName] = MOTOR(jointName, self.steps)
     
     def Act(self, t):
-        for jointName in self.motors:
-            self.motors[jointName].Set_Value(t, self.robotId)
+        for neuronName in self.nn.Get_Neuron_Names():
+            if self.nn.Is_Motor_Neuron(neuronName):
+                jointName = self.nn.Get_Motor_Neurons_Joint(neuronName)
+                desiredAngle = self.nn.Get_Value_Of(neuronName)
+                print(neuronName, jointName, desiredAngle)
     
     def Think(self):
         self.nn.Update()
