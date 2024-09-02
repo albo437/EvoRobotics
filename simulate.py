@@ -1,5 +1,7 @@
 from simulation import SIMULATION
 import constants as c
+import sys
 
-simulation = SIMULATION(c.steps)
+directOrGui = sys.argv[1]
+simulation = SIMULATION(c.steps, directOrGui)
 simulation.getFitness()

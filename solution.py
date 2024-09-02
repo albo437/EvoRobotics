@@ -7,11 +7,14 @@ class SOLUTION:
         # 3 by 2 matrix of random wieghts
         self.weights = np.random.uniform(-1, 1, (3, 2))
     
-    def Evaluate(self):
+    def Evaluate(self, directOrGui):
         self.generateWorld()
         self.generateBody()
         self.generateBrain()
-        os.system("python3 simulate.py")
+        os.system("python3 simulate.py " + directOrGui)
+        f = open("fitness.txt", "r")
+        self.fitness = float(f.read())
+        f.close()
 
     def generateWorld(self):
         pyrosim.Start_SDF("world.sdf")
@@ -63,3 +66,8 @@ class SOLUTION:
 
 
         pyrosim.End()
+    
+    def Mutate(self):
+        row = np.random.randint(3)
+        column = np.random.randint(2)
+        self.weights[row, column] = np.random.uniform(-1, 1)
