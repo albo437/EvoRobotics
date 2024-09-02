@@ -1,20 +1,41 @@
 import pyrosim.pyrosim as pyrosim
 import numpy as np
 import os
+import time
 
 class SOLUTION:
-    def __init__(self):
+    def __init__(self, nextAvailableID):
         # 3 by 2 matrix of random wieghts
+        self.myID = nextAvailableID
         self.weights = np.random.uniform(-1, 1, (3, 2))
     
     def Evaluate(self, directOrGui):
+        self.Create_World()
+        self.Generate_Body()
+        self.Generate_Brain()
+        os.system("python3 simulate.py " + directOrGui + " " + str(self.myID) +" &")
+        fitnessFileName = f"fitness{str(self.myID)}"
+        while not os.path.exists(fitnessFileName):
+            time.sleep(0.01)
+        fitnessFile = open(fitnessFileName, "r")
+        self.fitness = float(fitnessFile.read())
+        print(self.fitness)
+        fitnessFile.close()
+    
+    def Start_Simulation(self, directOrGui):
         self.generateWorld()
         self.generateBody()
         self.generateBrain()
-        os.system("python3 simulate.py " + directOrGui)
-        f = open("fitness.txt", "r")
+        os.system("python3 simulate.py " + directOrGui + " " + str(self.myID) +" &")
+    
+    def Wait_For_Simulation_To_End(self):
+        fitnessFileName = "fitness"+str(self.myID)+".txt"
+        while not os.path.exists(fitnessFileName):
+            time.sleep(0.01)
+        f = open("fitness"+str(self.myID)+".txt", "r")
         self.fitness = float(f.read())
         f.close()
+        os.system("rm fitness"+str(self.myID)+".txt")
 
     def generateWorld(self):
         pyrosim.Start_SDF("world.sdf")
@@ -51,7 +72,7 @@ class SOLUTION:
         pyrosim.End()
 
     def generateBrain(self):
-        pyrosim.Start_NeuralNetwork("brain.nndf")
+        pyrosim.Start_NeuralNetwork("brain"+str(self.myID)+".nndf")
 
         pyrosim.Send_Sensor_Neuron(name = 0 , linkName = "Torso")
         pyrosim.Send_Sensor_Neuron(name = 1 , linkName = "BackLeg")
@@ -71,3 +92,6 @@ class SOLUTION:
         row = np.random.randint(3)
         column = np.random.randint(2)
         self.weights[row, column] = np.random.uniform(-1, 1)
+    
+    def Set_ID(self, nextAvailableID):
+        self.myID = nextAvailableID

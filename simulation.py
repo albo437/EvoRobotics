@@ -8,7 +8,7 @@ from world import WORLD
 from robot import ROBOT
 
 class SIMULATION:
-    def __init__(self, steps, directOrGui):
+    def __init__(self, steps, directOrGui, solutionID):
         self.steps = steps
         self.directOrGui = directOrGui
         if (directOrGui == "DIRECT"):
@@ -19,7 +19,7 @@ class SIMULATION:
         p.configureDebugVisualizer(p.COV_ENABLE_GUI, 0)
         p.setGravity(0,0,-c.gravity)
         self.world = WORLD()
-        self.robot = ROBOT(self.steps)
+        self.robot = ROBOT(self.steps, solutionID)
         pyrosim.Prepare_To_Simulate(self.robot.robotId)
         self.Run()
     
