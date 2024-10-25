@@ -1,12 +1,11 @@
 import pyrosim.pyrosim as pyrosim
 import numpy as np
 import os
-import time
+import time 
 import constants as c
 
 class SOLUTION:
     def __init__(self, nextAvailableID):
-        # 3 by 2 matrix of random wieghts
         self.myID = nextAvailableID
         self.weights = np.random.uniform(-1, 1, (c.numSensorNeurons, c.numMotorNeurons))
     
