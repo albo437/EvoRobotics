@@ -1,4 +1,3 @@
-import numpy as np
 import time
 import pybullet as p
 import pybullet_data
@@ -6,9 +5,12 @@ import pyrosim.pyrosim as pyrosim
 import constants as c
 from world import WORLD
 from robot import ROBOT
+import os
+import numpy as np
 
 class SIMULATION:
     def __init__(self, steps, directOrGui, solutionID):
+        self.myID = solutionID
         self.steps = steps
         self.directOrGui = directOrGui
         if (directOrGui == "DIRECT"):
@@ -18,12 +20,14 @@ class SIMULATION:
         p.setAdditionalSearchPath(pybullet_data.getDataPath())
         p.configureDebugVisualizer(p.COV_ENABLE_GUI, 0)
         p.setGravity(0,0,-c.gravity)
-        self.world = WORLD()
+        self.world = WORLD(solutionID)
         self.robot = ROBOT(self.steps, solutionID)
         pyrosim.Prepare_To_Simulate(self.robot.robotId)
         self.Run()
+        os.system("del world"+str(solutionID)+".sdf")
     
     def Run(self):
+        self.heights = np.zeros(self.steps)
         for t in range(self.steps):
             if self.directOrGui != "DIRECT":
                 time.sleep(1/60)
@@ -31,9 +35,35 @@ class SIMULATION:
             self.robot.Sense(t)
             self.robot.Think()
             self.robot.Act()
+            #collect height of robot
+            basePositionAndOrientation = p.getBasePositionAndOrientation(self.robot.robotId)
+            basePosition = basePositionAndOrientation[0]
+            zCoordinateOfLinkZero = basePosition[2]
+            self.heights[t] = zCoordinateOfLinkZero
+
 
     def getFitness(self):
-        self.robot.Get_Fitness()
+        #max height of robot
+        # maxHeight = -np.max(self.heights)
+        # f = open("tmp"+self.myID+".txt", "w")
+        # f.write(str(maxHeight))
+        # f.close()
+        # os.system("move tmp"+self.myID+".txt fitness"+self.myID+".txt")
+
+        #final height of robot
+        # finalHeight = -self.heights[-1]
+        # f = open("tmp"+self.myID+".txt", "w")
+        # f.write(str(finalHeight))
+        # f.close()
+        # os.system("move tmp"+self.myID+".txt fitness"+self.myID+".txt")
+
+        #average height of robot
+        averageHeight = -np.mean(self.heights)
+        f = open("tmp"+self.myID+".txt", "w")
+        f.write(str(averageHeight))
+        f.close()
+        os.system("move tmp"+self.myID+".txt fitness"+self.myID+".txt")
+
 
     def __del__(self):
         p.disconnect

@@ -10,7 +10,7 @@ numSensorNeurons = 9
 numMotorNeurons = 8
 motorJointRange = 0.3
 
-numGenerations = 100
+numGenerations = 10
 populationSize = 10
 childrenSize = 10
 bounds = [-1, 1]

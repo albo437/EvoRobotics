@@ -10,10 +10,10 @@ class SOLUTION:
         self.weights = np.random.uniform(-1, 1, (c.numSensorNeurons, c.numMotorNeurons))
     
     def Evaluate(self, directOrGui):
-        self.Create_World()
-        self.Generate_Body()
-        self.Generate_Brain()
-        os.system("python3 simulate.py " + directOrGui + " " + str(self.myID) +" 2&>1 &")
+        self.generateWorld()
+        self.generateBody()
+        self.generateBrain()
+        os.system(f'start /B py simulate.py {directOrGui} {str(self.myID)}')
         fitnessFileName = f"fitness{str(self.myID)}"
         while not os.path.exists(fitnessFileName):
             time.sleep(0.01)
@@ -26,19 +26,19 @@ class SOLUTION:
         self.generateWorld()
         self.generateBody()
         self.generateBrain()
-        os.system("python3 simulate.py " + directOrGui + " " + str(self.myID) +" &")
-    
+        os.system("start /B python simulate.py " + directOrGui + " " + str(self.myID))
+ 
     def Wait_For_Simulation_To_End(self):
-        fitnessFileName = "fitness"+str(self.myID)+".txt"
+        fitnessFileName = f'fitness{str(self.myID)}.txt'
         while not os.path.exists(fitnessFileName):
             time.sleep(0.01)
         f = open("fitness"+str(self.myID)+".txt", "r")
         self.fitness = float(f.read())
         f.close()
-        os.system("rm fitness"+str(self.myID)+".txt")
+        os.system("del fitness"+str(self.myID)+".txt")
 
     def generateWorld(self):
-        pyrosim.Start_SDF("world.sdf")
+        pyrosim.Start_SDF("world"+str(self.myID)+".sdf")
 
         #Dimensions of the box
         length = 1
@@ -52,8 +52,9 @@ class SOLUTION:
         pyrosim.Send_Cube(name = "box", pos = [x, y, z], size = [length, width, height])
         pyrosim.End()
 
+
     def generateBody(self):
-        pyrosim.Start_URDF("body.urdf")
+        pyrosim.Start_URDF("body"+str(self.myID)+".urdf")
         #Dimensions of the box
         length = 1
         width = 1

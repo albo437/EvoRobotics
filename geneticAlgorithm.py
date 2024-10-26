@@ -1,13 +1,15 @@
+import pybullet as p
 from solution import SOLUTION
 import constants as c
-import copy
 import os
 import numpy as np
 
 class GENETIC_ALGORITHM:
     def __init__(self):
-        os.system("rm fitness*.txt")
-        os.system("rm brain*.nndf")
+        os.system("del fitness*.txt")
+        os.system("del brain*.nndf")
+        os.system("del body*.urdf")
+        os.system("del world*.sdf")
         self.crossoverRate = 1
         self.mutationRate = 1/(c.numSensorNeurons * c.numMotorNeurons)
         self.parents = []
