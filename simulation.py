@@ -28,6 +28,7 @@ class SIMULATION:
     
     def Run(self):
         self.heights = np.zeros(self.steps)
+        self.capSensor = np.zeros(self.steps)
         for t in range(self.steps):
             if self.directOrGui != "DIRECT":
                 time.sleep(1/60)
@@ -41,14 +42,33 @@ class SIMULATION:
             zCoordinateOfLinkZero = basePosition[2]
             self.heights[t] = zCoordinateOfLinkZero
 
+            #collect touch sensor value
+            self.capSensor[t] = self.robot.sensors["cap"].values[t]
+
+
 
     def getFitness(self):
         #max height of robot
-        # maxHeight = -np.max(self.heights)
-        # f = open("tmp"+self.myID+".txt", "w")
-        # f.write(str(maxHeight))
-        # f.close()
-        # os.system("move tmp"+self.myID+".txt fitness"+self.myID+".txt")
+        maxHeight = -np.max(self.heights)
+        #values of capsensor equal to -1
+        Noflipped = 1
+        if 1 in self.capSensor:
+            Noflipped = -1
+
+        #distance from origin
+        # basePositionAndOrientation = p.getBasePositionAndOrientation(self.robot.robotId)
+        # basePosition = basePositionAndOrientation[0]
+        # distance = (basePosition[0]**2 + basePosition[1]**2)
+
+        # #fitness function
+        fitness = maxHeight*Noflipped
+    
+
+        #write fitness to file
+        f = open("tmp"+self.myID+".txt", "w")
+        f.write(str(fitness))
+        f.close()
+        os.system("move tmp"+self.myID+".txt fitness"+self.myID+".txt")
 
         #final height of robot
         # finalHeight = -self.heights[-1]
@@ -58,11 +78,11 @@ class SIMULATION:
         # os.system("move tmp"+self.myID+".txt fitness"+self.myID+".txt")
 
         #average height of robot
-        averageHeight = -np.mean(self.heights)
-        f = open("tmp"+self.myID+".txt", "w")
-        f.write(str(averageHeight))
-        f.close()
-        os.system("move tmp"+self.myID+".txt fitness"+self.myID+".txt")
+        # averageHeight = -np.mean(self.heights)
+        # f = open("tmp"+self.myID+".txt", "w")
+        # f.write(str(averageHeight))
+        # f.close()
+        # os.system("move tmp"+self.myID+".txt fitness"+self.myID+".txt")
 
 
     def __del__(self):

@@ -11,7 +11,7 @@ class GENETIC_ALGORITHM:
         os.system("del body*.urdf")
         os.system("del world*.sdf")
         self.crossoverRate = 1
-        self.mutationRate = 1/(c.numSensorNeurons * c.numMotorNeurons)
+        self.mutationRate = 1/(c.numSensorNeurons * c.numHiddenNeurons)
         self.parents = []
         self.nextAvailableID = 0
         for i in range(c.populationSize):
@@ -20,7 +20,7 @@ class GENETIC_ALGORITHM:
         self.Evaluate(self.parents)
     
     def Evolve(self):
-        for currGeneration in range(c.numGenerations):
+        for _ in range(c.numGenerations):
             self.Evolve_For_One_Generation()
         
     
@@ -41,22 +41,33 @@ class GENETIC_ALGORITHM:
             parent2Index = np.random.randint(0, len(self.parents))
             
             # Get parents weight matrices
-            parent1weights = self.parents[parent1Index].weights
-            parent2weights = self.parents[parent2Index].weights
+            parent1ToHiddenWeights = self.parents[parent1Index].weightsToHidden
+            parent2ToHiddenWeights = self.parents[parent2Index].weightsToHidden
+
+            parent1ToMotorWeights = self.parents[parent1Index].weightsToMotor
+            parent2ToMotorWeights = self.parents[parent2Index].weightsToMotor
 
             # Simulated Binary Crossover
-            child1Weights, child2Weights = self.SBX(parent1weights, parent2weights)
+            child1ToHiddenWeights, child2ToHiddenWeights = self.SBX(parent1ToHiddenWeights, parent2ToHiddenWeights)
+
+            child1ToMotorWeights, child2ToMotorWeights = self.SBX(parent1ToMotorWeights, parent2ToMotorWeights)
 
             # Mutate children
-            child1Weights = self.polynomialMutation(child1Weights)
-            child2Weights = self.polynomialMutation(child2Weights)
+            child1ToHiddenWeights = self.polynomialMutation(child1ToHiddenWeights)
+            child2ToHiddenWeights = self.polynomialMutation(child2ToHiddenWeights)
+
+            child1ToMotorWeights = self.polynomialMutation(child1ToMotorWeights)
+            child2ToMotorWeights = self.polynomialMutation(child2ToMotorWeights)
 
             # Create children
             child1 = SOLUTION(self.nextAvailableID)
-            child1.weights = child1Weights
+            child1.weightsToHidden = child1ToHiddenWeights
+            child1.weightsToMotor = child1ToMotorWeights
+
             self.nextAvailableID += 1
             child2 = SOLUTION(self.nextAvailableID)
-            child2.weights = child2Weights
+            child2.weightsToHidden = child2ToHiddenWeights
+            child2.weightsToMotor = child2ToMotorWeights
             self.nextAvailableID += 1
 
             self.children.append(child1)

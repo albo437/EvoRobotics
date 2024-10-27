@@ -6,9 +6,10 @@ phaseOffset = 0
 maxForce = 500
 steps = 1000
 
-numSensorNeurons = 9
+numSensorNeurons = 8
 numMotorNeurons = 8
-motorJointRange = 0.3
+numHiddenNeurons = 6
+motorJointRange = 1
 
 numGenerations = 10
 populationSize = 10

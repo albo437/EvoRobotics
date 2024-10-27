@@ -1,9 +1,8 @@
 import pybullet as p
-import pybullet_data
 import pyrosim.pyrosim as pyrosim
 import constants as c
 
 class WORLD:
-    def __init__(self):
+    def __init__(self, solutionID):
         self.planeId = p.loadURDF("plane.urdf")
-        p.loadSDF("world.sdf")
+        p.loadSDF(f'world{solutionID}.sdf')
