@@ -1,8 +1,9 @@
 from geneticAlgorithm import GENETIC_ALGORITHM
 
-
 ga = GENETIC_ALGORITHM()
 ga.Evolve()
-ga.Show_Best()
+for i in range(1):
+    ga.Show_Best()
+    
 
 

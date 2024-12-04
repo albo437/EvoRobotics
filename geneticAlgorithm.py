@@ -15,25 +15,27 @@ class GENETIC_ALGORITHM:
         self.parents = []
         self.nextAvailableID = 0
         for i in range(c.populationSize):
-            self.parents.append(SOLUTION(self.nextAvailableID))
+            self.parents.append(SOLUTION(self.nextAvailableID, 0))
             self.nextAvailableID += 1
         self.Evaluate(self.parents)
     
     def Evolve(self):
-        for _ in range(c.numGenerations):
-            self.Evolve_For_One_Generation()
+        for i in range(c.numGenerations):
+            self.Evolve_For_One_Generation(i)
         
     
-    def Evolve_For_One_Generation(self):
-        self.generateOffspring()
+    def Evolve_For_One_Generation(self, i):
+        self.generateOffspring(i)
         self.Evaluate(self.children)
         self.Select()
         #print best fitness of generation
         print("\n")
+        print(self.parents[0].fitnessList)
         print(self.parents[0].fitness)
         print("\n")
+
     
-    def generateOffspring(self):
+    def generateOffspring(self, i):
         self.children = []
         for i in range(c.childrenSize):
             # Select two random parents
@@ -60,14 +62,23 @@ class GENETIC_ALGORITHM:
             child2ToMotorWeights = self.polynomialMutation(child2ToMotorWeights)
 
             # Create children
-            child1 = SOLUTION(self.nextAvailableID)
+            child1 = SOLUTION(self.nextAvailableID, i)
             child1.weightsToHidden = child1ToHiddenWeights
             child1.weightsToMotor = child1ToMotorWeights
 
+            #test make all values 0
+            # child1.weightsToHidden = np.zeros((c.numSensorNeurons, c.numHiddenNeurons))
+            # child1.weightsToMotor = np.zeros((c.numHiddenNeurons, c.numMotorNeurons))
+          
+
             self.nextAvailableID += 1
-            child2 = SOLUTION(self.nextAvailableID)
+            child2 = SOLUTION(self.nextAvailableID, i)
             child2.weightsToHidden = child2ToHiddenWeights
             child2.weightsToMotor = child2ToMotorWeights
+
+            # child2.weightsToHidden = np.zeros((c.numSensorNeurons, c.numHiddenNeurons))
+            # child2.weightsToMotor = np.zeros((c.numHiddenNeurons, c.numMotorNeurons))     
+            
             self.nextAvailableID += 1
 
             self.children.append(child1)
@@ -123,4 +134,6 @@ class GENETIC_ALGORITHM:
         self.parents = population[:c.populationSize]    
     
     def Show_Best(self):
+        print(self.parents[0].fitnessList)
+        print(self.parents[0].generation)
         self.parents[0].Start_Simulation("GUI")

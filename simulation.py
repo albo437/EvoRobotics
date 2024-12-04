@@ -28,7 +28,7 @@ class SIMULATION:
     
     def Run(self):
         self.heights = np.zeros(self.steps)
-        self.capSensor = np.zeros(self.steps)
+        self.tilt = np.zeros(self.steps)
         for t in range(self.steps):
             if self.directOrGui != "DIRECT":
                 time.sleep(1/60)
@@ -42,48 +42,41 @@ class SIMULATION:
             zCoordinateOfLinkZero = basePosition[2]
             self.heights[t] = zCoordinateOfLinkZero
 
-            #collect touch sensor value
-            self.capSensor[t] = self.robot.sensors["cap"].values[t]
+            #calculate how much the object is tilted
+            
+            _, orientation_quaternion = p.getBasePositionAndOrientation(self.robot.robotId)
 
+            # Convert quaternion to Euler angles
+            roll, pitch, _ = p.getEulerFromQuaternion(orientation_quaternion)
 
+            # Calculate "flippedness" using the cosines of roll and pitch
+            flippedness = (np.cos(roll) + np.cos(pitch)) / 2.0
+            self.tilt[t] = flippedness
+
+            # print cap sensor value every 10 steps
+            if t % 100 == 0 and self.directOrGui != "DIRECT":
+                print(self.robot.sensors["cap"].values[t])
 
     def getFitness(self):
         #max height of robot
         maxHeight = -np.max(self.heights)
-        #values of capsensor equal to -1
-        Noflipped = 1
-        if 1 in self.capSensor:
-            Noflipped = -1
+        
+        #average tilt of robot
+        averageTilt = np.mean(self.tilt)
 
-        #distance from origin
-        # basePositionAndOrientation = p.getBasePositionAndOrientation(self.robot.robotId)
-        # basePosition = basePositionAndOrientation[0]
-        # distance = (basePosition[0]**2 + basePosition[1]**2)
+        #distance to box
+        robotPosition = p.getBasePositionAndOrientation(self.robot.robotId)[0][0:2]
+        boxPosition = p.getBasePositionAndOrientation(1)[0][0:2]
+        
+        distance = np.sqrt((robotPosition[0] - boxPosition[0])**2 + (robotPosition[1] - boxPosition[1])**2)
 
         # #fitness function
-        fitness = maxHeight*Noflipped
+        fitness = distance
     
-
         #write fitness to file
-        f = open("tmp"+self.myID+".txt", "w")
-        f.write(str(fitness))
-        f.close()
+        with open("tmp" + str(self.myID) + ".txt", "a") as f:
+            f.write(str(fitness) + "\n")
         os.system("move tmp"+self.myID+".txt fitness"+self.myID+".txt")
-
-        #final height of robot
-        # finalHeight = -self.heights[-1]
-        # f = open("tmp"+self.myID+".txt", "w")
-        # f.write(str(finalHeight))
-        # f.close()
-        # os.system("move tmp"+self.myID+".txt fitness"+self.myID+".txt")
-
-        #average height of robot
-        # averageHeight = -np.mean(self.heights)
-        # f = open("tmp"+self.myID+".txt", "w")
-        # f.write(str(averageHeight))
-        # f.close()
-        # os.system("move tmp"+self.myID+".txt fitness"+self.myID+".txt")
-
 
     def __del__(self):
         p.disconnect

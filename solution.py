@@ -5,23 +5,16 @@ import time
 import constants as c
 
 class SOLUTION:
-    def __init__(self, nextAvailableID):
+    def __init__(self, nextAvailableID, generation):
         self.myID = nextAvailableID
         self.weightsToHidden = np.random.uniform(-1, 1, (c.numSensorNeurons, c.numHiddenNeurons))
         self.weightsToMotor = np.random.uniform(-1, 1, (c.numHiddenNeurons, c.numMotorNeurons))
-    
-    def Evaluate(self, directOrGui):
-        self.generateWorld()
-        self.generateBody()
-        self.generateBrain()
-        os.system(f'start /B py simulate.py {directOrGui} {str(self.myID)}')
-        fitnessFileName = f"fitness{str(self.myID)}"
-        while not os.path.exists(fitnessFileName):
-            time.sleep(0.01)
-        fitnessFile = open(fitnessFileName, "r")
-        self.fitness = float(fitnessFile.read())
-        print(self.fitness)
-        fitnessFile.close()
+        self.fitnessList = []
+        self.generation = generation
+
+        #test make all values 0
+        # self.weightsToHidden = np.zeros((c.numSensorNeurons, c.numHiddenNeurons))
+        # self.weightsToMotor = np.zeros((c.numHiddenNeurons, c.numMotorNeurons))
     
     def Start_Simulation(self, directOrGui):
         self.generateWorld()
@@ -37,7 +30,8 @@ class SOLUTION:
         while not os.path.exists(fitnessFileName):
             time.sleep(0.01)
         f = open("fitness"+str(self.myID)+".txt", "r")
-        self.fitness = float(f.read())
+        self.fitnessList.append(float(f.read()))
+        self.fitness = np.mean(self.fitnessList)
         f.close()
         os.system("del fitness"+str(self.myID)+".txt")
 
@@ -46,12 +40,12 @@ class SOLUTION:
 
         #Dimensions of the box
         length = 1
-        width = 1
-        height = 1
+        width = 10
+        height = 10
         #Position of the box
-        x = -4
-        y = -4
-        z = 0.5
+        x = 10
+        y = np.random.uniform(-20, 20)
+        z = 5
 
         pyrosim.Send_Cube(name = "box", pos = [x, y, z], size = [length, width, height])
         pyrosim.End()
@@ -71,7 +65,7 @@ class SOLUTION:
         pyrosim.Send_Cube(name = "Torso", pos = [x, y, z], size = [length, width, height])
 
         pyrosim.Send_Joint(name = "Torso_cap", parent = "Torso", child = "cap", type = "revolute", position = [0, 0, 1.5], jointAxis = "0 0 1")
-        pyrosim.Send_Cube(name = "cap", pos = [0, 0, 0], size = [1, 1, 0.2])
+        pyrosim.Send_Cube(name = "cap", pos = [0, 0, 0], size = [1, 1, 0.1])
 
         pyrosim.Send_Joint(name = "Torso_BackLeg" , parent= "Torso" , child = "BackLeg" , type = "revolute", position = [0, -0.5, 1], jointAxis = "1 0 0")
         pyrosim.Send_Cube(name = "BackLeg", pos = [0, -0.5, 0], size = [0.2,1,0.2])
@@ -106,24 +100,24 @@ class SOLUTION:
         pyrosim.Send_Sensor_Neuron(name = 5 , linkName = "FrontLowerLeg")
         pyrosim.Send_Sensor_Neuron(name = 6 , linkName = "LeftLowerLeg")
         pyrosim.Send_Sensor_Neuron(name = 7 , linkName = "RightLowerLeg")
+        pyrosim.Send_Sensor_Neuron(name = 8 , linkName = "cap") #ray sensor
 
-        pyrosim.Send_Hidden_Neuron( name = 8 )
         pyrosim.Send_Hidden_Neuron( name = 9 )
         pyrosim.Send_Hidden_Neuron( name = 10 )
         pyrosim.Send_Hidden_Neuron( name = 11 )
         pyrosim.Send_Hidden_Neuron( name = 12 )
         pyrosim.Send_Hidden_Neuron( name = 13 )
+        pyrosim.Send_Hidden_Neuron( name = 14 )
 
-        pyrosim.Send_Motor_Neuron( name = 14, jointName = "Torso_BackLeg")
-        pyrosim.Send_Motor_Neuron( name = 15 , jointName = "Torso_FrontLeg")
-        pyrosim.Send_Motor_Neuron( name = 16 , jointName = "Torso_LeftLeg")
-        pyrosim.Send_Motor_Neuron( name = 17 , jointName = "Torso_RightLeg")
-        pyrosim.Send_Motor_Neuron( name = 18 , jointName = "BackLeg_BackLowerLeg")
-        pyrosim.Send_Motor_Neuron( name = 19 , jointName = "FrontLeg_FrontLowerLeg")
-        pyrosim.Send_Motor_Neuron( name = 20 , jointName = "LeftLeg_LeftLowerLeg")
-        pyrosim.Send_Motor_Neuron( name = 21 , jointName = "RightLeg_RightLowerLeg")
+        pyrosim.Send_Motor_Neuron( name = 15, jointName = "Torso_BackLeg")
+        pyrosim.Send_Motor_Neuron( name = 16 , jointName = "Torso_FrontLeg")
+        pyrosim.Send_Motor_Neuron( name = 17 , jointName = "Torso_LeftLeg")
+        pyrosim.Send_Motor_Neuron( name = 18 , jointName = "Torso_RightLeg")
+        pyrosim.Send_Motor_Neuron( name = 19 , jointName = "BackLeg_BackLowerLeg")
+        pyrosim.Send_Motor_Neuron( name = 20 , jointName = "FrontLeg_FrontLowerLeg")
+        pyrosim.Send_Motor_Neuron( name = 21 , jointName = "LeftLeg_LeftLowerLeg")
+        pyrosim.Send_Motor_Neuron( name = 22 , jointName = "RightLeg_RightLowerLeg")
 
-        pyrosim.Send_Sensor_Neuron(name = 22 , linkName = "cap")
 
         neuronCount = c.numSensorNeurons
         for i in range(c.numSensorNeurons):

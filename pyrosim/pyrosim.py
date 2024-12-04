@@ -14,6 +14,8 @@ from pyrosim.urdf  import URDF
 
 from pyrosim.joint import JOINT
 
+import numpy as np
+
 SDF_FILETYPE  = 0
 
 URDF_FILETYPE = 1
@@ -59,6 +61,59 @@ def Get_Touch_Sensor_Value_For_Link(linkName):
             touchValue = 1.0
 
     return touchValue
+
+def Get_Ray_Sensor_Value_For_Link(bodyID, linkName):
+    bodyID = 2
+
+    # Get the link position and orientation
+    linkIndex = linkNamesToIndices[linkName]
+    linkPosition, linkOrientation = p.getLinkState(bodyID, linkIndex)[:2]
+
+    # Convert quaternion to rotation matrix to determine orientation
+    rotation_matrix = p.getMatrixFromQuaternion(linkOrientation)
+    forward_vector = np.array([rotation_matrix[0], rotation_matrix[3], rotation_matrix[6]])
+
+    # Offset `rayFrom` to the front face of the cube
+    front_face_position = np.array(linkPosition) + forward_vector * 0.5
+
+    # Parameters for the square projection grid
+    square_size = 0.5  # Square side length for the grid of rays
+    num_points = 5     # Number of points per row/column
+
+    # Initialize lists for ray start (rayFrom) and end (rayTo) positions
+    rayFrom_positions = []
+    rayTo_positions = []
+
+    # Set up the grid of rays
+    half_size = square_size / 2
+    spacing = square_size / (num_points - 1)
+
+    for i in range(num_points):
+        for j in range(num_points):
+            # Calculate offset within the square for each point
+            x_offset = (i * spacing) - half_size
+            y_offset = (j * spacing) - half_size
+
+            # `rayFrom`: starting at the cube's front face
+            ray_from_position = front_face_position + np.dot(rotation_matrix[:3], [x_offset, y_offset, 0])
+            rayFrom_positions.append(ray_from_position.tolist())
+
+            # `rayTo`: end points further in the forward direction, creating the grid in front
+            ray_to_position = ray_from_position + forward_vector * 20.0  # Adjust this distance as needed
+            rayTo_positions.append(ray_to_position.tolist())
+
+    # Cast rays in batch
+    results = p.rayTestBatch(rayFrom_positions, rayTo_positions)
+
+     # Calculate the number of hits to body 1
+    hit_count = sum([1 for result in results if result[0] == 1])
+    total_rays = len(results)
+
+    # Calculate score between -1 and 1
+    hit_fraction = hit_count / total_rays
+    score = 2 * hit_fraction - 1  # Map [0, 1] to [-1, 1]
+
+    return score
 
 def Prepare_Link_Dictionary(bodyID):
 

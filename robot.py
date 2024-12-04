@@ -3,6 +3,7 @@ import pyrosim.pyrosim as pyrosim
 from pyrosim.neuralNetwork import NEURAL_NETWORK
 import constants as c
 from sensor import SENSOR
+from raySensor import RAY_SENSOR
 from motor import MOTOR
 import os
 
@@ -23,11 +24,17 @@ class ROBOT:
     
     def Prepare_To_Sense(self):
         for linkName in pyrosim.linkNamesToIndices:
-            self.sensors[linkName] = SENSOR(linkName, self.steps)
+            if linkName != "cap":
+                self.sensors[linkName] = SENSOR(linkName, self.steps)
+            else:
+                self.sensors["cap"] = RAY_SENSOR(linkName, self.steps)
     
     def Sense(self, t):
         for sensor in self.sensors:
-            self.sensors[sensor].Get_Value(t)
+            if sensor != "cap":
+                self.sensors[sensor].Get_Value(t)
+            else:
+                self.sensors["cap"].Get_Value(t)
 
     def Prepare_To_Act(self):
         for jointName in pyrosim.jointNamesToIndices:
