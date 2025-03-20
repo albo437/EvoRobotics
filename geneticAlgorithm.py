@@ -11,7 +11,7 @@ class GENETIC_ALGORITHM:
         os.system("del body*.urdf")
         os.system("del world*.sdf")
         self.crossoverRate = 1
-        self.mutationRate = 1/(c.numSensorNeurons * c.numHiddenNeurons)
+        self.mutationRate = 1/(c.numSensorNeurons + c.numHiddenNeurons)
         self.parents = []
         self.nextAvailableID = 0
         for i in range(c.populationSize):
@@ -123,10 +123,11 @@ class GENETIC_ALGORITHM:
         return childWeights
 
     def Evaluate(self, solutions):
-        for individual in solutions:
-            individual.Start_Simulation("DIRECT")
-        for individual in solutions:
-            individual.Wait_For_Simulation_To_End()
+        for i in range(3):
+            for individual in solutions:
+                individual.Start_Simulation("DIRECT")
+            for individual in solutions:
+                individual.Wait_For_Simulation_To_End()
     
     def Select(self):
         population = self.parents + self.children

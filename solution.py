@@ -11,6 +11,7 @@ class SOLUTION:
         self.weightsToMotor = np.random.uniform(-1, 1, (c.numHiddenNeurons, c.numMotorNeurons))
         self.fitnessList = []
         self.generation = generation
+        self.fitness = 0
 
         #test make all values 0
         # self.weightsToHidden = np.zeros((c.numSensorNeurons, c.numHiddenNeurons))

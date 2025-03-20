@@ -11,8 +11,8 @@ numMotorNeurons = 8
 numHiddenNeurons = 6
 motorJointRange = 0.5
 
-numGenerations = 50
-populationSize = 10
+numGenerations = 2
+populationSize = 2
 childrenSize = 10
 bounds = [-1, 1]
 crossoverRate = 1
