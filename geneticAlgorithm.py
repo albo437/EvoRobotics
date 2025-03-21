@@ -6,10 +6,10 @@ import numpy as np
 
 class GENETIC_ALGORITHM:
     def __init__(self):
-        os.system("del fitness*.txt")
-        os.system("del brain*.nndf")
-        os.system("del body*.urdf")
-        os.system("del world*.sdf")
+        os.system("rm fitness*.txt")
+        os.system("rm brain*.nndf")
+        os.system("rm body*.urdf")
+        os.system("rm world*.sdf")
         self.crossoverRate = 1
         self.mutationRate = 1/(c.numSensorNeurons + c.numHiddenNeurons)
         self.parents = []

@@ -15,8 +15,8 @@ class ROBOT:
         self.sensors = {}
         self.robotId = p.loadURDF("body"+str(solutionID)+".urdf")
         self.nn = NEURAL_NETWORK("brain"+str(solutionID)+".nndf")
-        os.system("del brain"+str(solutionID)+".nndf")
-        os.system("del body"+str(solutionID)+".urdf")
+        os.system("rm brain"+str(solutionID)+".nndf")  
+        os.system("rm body"+str(solutionID)+".urdf")  
         pyrosim.Prepare_To_Simulate(self.robotId)
 
         self.Prepare_To_Sense()
@@ -57,7 +57,4 @@ class ROBOT:
         f = open("tmp"+self.myID+".txt", "w")
         f.write(str(zCoordinateOfLinkZero))
         f.close()
-        os.system("move tmp"+self.myID+".txt fitness"+self.myID+".txt")
-
-
-        
+        os.system("mv tmp"+self.myID+".txt fitness"+self.myID+".txt")  
