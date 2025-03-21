@@ -29,10 +29,13 @@ class GENETIC_ALGORITHM:
         self.Evaluate(self.children)
         self.Select()
         #print best fitness of generation
-        print("\n")
+        for j in range(10):
+            print("\n")
+        print("Generation: ", i)
         print(self.parents[0].fitnessList)
         print(self.parents[0].fitness)
-        print("\n")
+        for j in range(10):
+            print("\n")
 
     
     def generateOffspring(self, i):
@@ -123,7 +126,7 @@ class GENETIC_ALGORITHM:
         return childWeights
 
     def Evaluate(self, solutions):
-        for i in range(3):
+        for i in range(5):
             for individual in solutions:
                 individual.Start_Simulation("DIRECT")
             for individual in solutions:

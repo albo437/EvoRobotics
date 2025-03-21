@@ -36,33 +36,33 @@ class SIMULATION:
             self.robot.Sense(t)
             self.robot.Think()
             self.robot.Act()
-            #collect height of robot
-            basePositionAndOrientation = p.getBasePositionAndOrientation(self.robot.robotId)
-            basePosition = basePositionAndOrientation[0]
-            zCoordinateOfLinkZero = basePosition[2]
-            self.heights[t] = zCoordinateOfLinkZero
+            # #collect height of robot
+            # basePositionAndOrientation = p.getBasePositionAndOrientation(self.robot.robotId)
+            # basePosition = basePositionAndOrientation[0]
+            # zCoordinateOfLinkZero = basePosition[2]
+            # self.heights[t] = zCoordinateOfLinkZero
 
-            #calculate how much the object is tilted
+            # #calculate how much the object is tilted
             
-            _, orientation_quaternion = p.getBasePositionAndOrientation(self.robot.robotId)
+            # _, orientation_quaternion = p.getBasePositionAndOrientation(self.robot.robotId)
 
-            # Convert quaternion to Euler angles
-            roll, pitch, _ = p.getEulerFromQuaternion(orientation_quaternion)
+            # # Convert quaternion to Euler angles
+            # roll, pitch, _ = p.getEulerFromQuaternion(orientation_quaternion)
 
-            # Calculate "flippedness" using the cosines of roll and pitch
-            flippedness = (np.cos(roll) + np.cos(pitch)) / 2.0
-            self.tilt[t] = flippedness
+            # # Calculate "flippedness" using the cosines of roll and pitch
+            # flippedness = (np.cos(roll) + np.cos(pitch)) / 2.0
+            # self.tilt[t] = flippedness
 
             # print cap sensor value every 10 steps
             if t % 100 == 0 and self.directOrGui != "DIRECT":
                 print(self.robot.sensors["cap"].values[t])
 
     def getFitness(self):
-        #max height of robot
-        maxHeight = -np.max(self.heights)
+        # #max height of robot
+        # maxHeight = -np.max(self.heights)
         
-        #average tilt of robot
-        averageTilt = np.mean(self.tilt)
+        # #average tilt of robot
+        # averageTilt = np.mean(self.tilt)
 
         #distance to box
         robotPosition = p.getBasePositionAndOrientation(self.robot.robotId)[0][0:2]

@@ -25,16 +25,47 @@ class SOLUTION:
             os.system("start /B python simulate.py " + directOrGui + " " + str(self.myID))
         else:
             os.system("python simulate.py " + directOrGui + " " + str(self.myID))
+    
+    
  
+
     def Wait_For_Simulation_To_End(self):
-        fitnessFileName = f'fitness{str(self.myID)}.txt'
+        fitnessFileName = f'fitness{self.myID}.txt'
+
+        # Esperar hasta que el archivo exista
         while not os.path.exists(fitnessFileName):
             time.sleep(0.01)
-        f = open("fitness"+str(self.myID)+".txt", "r")
-        self.fitnessList.append(float(f.read()))
+
+        # Intentar abrir el archivo con reintentos en caso de error
+        content = None
+        for _ in range(10):  # Máximo 10 intentos
+            try:
+                with open(fitnessFileName, "r") as f:
+                    content = f.read().strip()
+                break  # Si la lectura es exitosa, salir del bucle
+            except PermissionError:
+                time.sleep(0.05)  # Esperar y reintentar
+
+        if content is None:
+            raise PermissionError(f"No se pudo leer {fitnessFileName} después de varios intentos.")
+
+        # Convertir a número flotante
+        try:
+            fitness_value = float(content)
+        except ValueError:
+            raise ValueError(f"El archivo {fitnessFileName} no contiene un número válido: {content}")
+
+        self.fitnessList.append(fitness_value)
         self.fitness = np.mean(self.fitnessList)
-        f.close()
-        os.system("del fitness"+str(self.myID)+".txt")
+
+        # Asegurar que el archivo ya no está en uso antes de eliminarlo
+        time.sleep(0.01)  
+        try:
+            os.remove(fitnessFileName)  # Mejor que `os.system("del ...")` porque es más seguro y multiplataforma
+        except PermissionError:
+            time.sleep(0.1)  # Esperar un poco más y reintentar
+            os.remove(fitnessFileName)
+
 
     def generateWorld(self):
         pyrosim.Start_SDF("world"+str(self.myID)+".sdf")
