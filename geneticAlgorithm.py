@@ -1,8 +1,11 @@
-import pybullet as p
+import evosax
+import jax
+import jax.numpy as jnp
 from solution import SOLUTION
 import constants as c
-import os
 import numpy as np
+import os
+
 
 class GENETIC_ALGORITHM:
     def __init__(self):
@@ -126,7 +129,7 @@ class GENETIC_ALGORITHM:
         return childWeights
 
     def Evaluate(self, solutions):
-        for i in range(5):
+        for i in range(10):
             for individual in solutions:
                 individual.Start_Simulation("DIRECT")
             for individual in solutions:
@@ -139,5 +142,9 @@ class GENETIC_ALGORITHM:
     
     def Show_Best(self):
         print(self.parents[0].fitnessList)
-        print(self.parents[0].generation)
+        print(self.parents[0].fitness)
         self.parents[0].Start_Simulation("GUI")
+
+    def Get_Best(self):
+        return self.parents[0].weightsToHidden, self.parents[0].weightsToMotor
+

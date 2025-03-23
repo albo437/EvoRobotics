@@ -12,6 +12,7 @@ class SOLUTION:
         self.fitnessList = []
         self.generation = generation
         self.fitness = 0
+        self.flattenedWeights = np.concatenate((self.weightsToHidden.flatten(), self.weightsToMotor.flatten()))
     
     def Start_Simulation(self, directOrGui):
         self.generateWorld()
@@ -58,7 +59,7 @@ class SOLUTION:
     def generateWorld(self):
         pyrosim.Start_SDF(f"world{self.myID}.sdf")
 
-        length, width, height = 1, 10, 10
+        length, width, height = 5, 10, 10
         x, y, z = 10, np.random.uniform(-20, 20), 5
 
         pyrosim.Send_Cube(name="box", pos=[x, y, z], size=[length, width, height])
@@ -66,32 +67,32 @@ class SOLUTION:
 
     def generateBody(self):
         pyrosim.Start_URDF(f"body{self.myID}.urdf")
-        pyrosim.Send_Cube(name="Torso", pos=[0, 0, 1], size=[1, 1, 1])
+        pyrosim.Send_Cube(name="Torso", pos=[0, 0, 1], size=[2, 1, 0.2])
 
         joints = [
-            ("Torso_cap", "Torso", "cap", "revolute", [0, 0, 1.5], "0 0 1"),
-            ("Torso_BackLeg", "Torso", "BackLeg", "revolute", [0, -0.5, 1], "1 0 0"),
-            ("BackLeg_BackLowerLeg", "BackLeg", "BackLowerLeg", "revolute", [0, -1, 0], "1 0 0"),
-            ("Torso_FrontLeg", "Torso", "FrontLeg", "revolute", [0, 0.5, 1], "1 0 0"),
-            ("FrontLeg_FrontLowerLeg", "FrontLeg", "FrontLowerLeg", "revolute", [0, 1, 0], "1 0 0"),
-            ("Torso_LeftLeg", "Torso", "LeftLeg", "revolute", [-0.5, 0, 1], "0 1 0"),
-            ("LeftLeg_LeftLowerLeg", "LeftLeg", "LeftLowerLeg", "revolute", [-1, 0, 0], "0 1 0"),
-            ("Torso_RightLeg", "Torso", "RightLeg", "revolute", [0.5, 0, 1], "0 1 0"),
-            ("RightLeg_RightLowerLeg", "RightLeg", "RightLowerLeg", "revolute", [1, 0, 0], "0 1 0"),
+            ("Torso_cap", "Torso", "cap", "revolute", [0, 0, 1.1], "0 0 1"),
+            ("Torso_BackLeg", "Torso", "BackLeg", "revolute", [0.7, -0.5, 1], "1 0 0"),
+            ("BackLeg_BackLowerLeg", "BackLeg", "BackLowerLeg", "revolute", [0, -0.3, 0], "0 1 0"),
+            ("Torso_FrontLeg", "Torso", "FrontLeg", "revolute", [0.7, 0.5, 1], "1 0 0"),
+            ("FrontLeg_FrontLowerLeg", "FrontLeg", "FrontLowerLeg", "revolute", [0, 0.3, 0], "0 1 0"),
+            ("Torso_LeftLeg", "Torso", "LeftLeg", "revolute", [-0.7, -0.5, 1], "1 0 0"),
+            ("LeftLeg_LeftLowerLeg", "LeftLeg", "LeftLowerLeg", "revolute", [0, -0.3, 0], "0 1 0"),
+            ("Torso_RightLeg", "Torso", "RightLeg", "revolute", [-0.7, 0.5, 1], "0 1 0"),
+            ("RightLeg_RightLowerLeg", "RightLeg", "RightLowerLeg", "revolute", [0, 0.3, 0], "0 1 0"),
         ]
         
         for name, parent, child, jtype, position, axis in joints:
             pyrosim.Send_Joint(name=name, parent=parent, child=child, type=jtype, position=position, jointAxis=axis)
         
         cubes = [
-            ("cap", [0, 0, 0], [1, 1, 0.1]),
-            ("BackLeg", [0, -0.5, 0], [0.2, 1, 0.2]),
+            ("cap", [0, 0, 0], [2, 1, 0.1]),
+            ("BackLeg", [0, -0.1, 0], [0.4, 0.2, 0.2]),
             ("BackLowerLeg", [0, 0, -0.5], [0.2, 0.2, 1]),
-            ("FrontLeg", [0, 0.5, 0], [0.2, 1, 0.2]),
+            ("FrontLeg", [0, 0.1, 0], [0.4, 0.2, 0.2]),
             ("FrontLowerLeg", [0, 0, -0.5], [0.2, 0.2, 1]),
-            ("LeftLeg", [-0.5, 0, 0], [1, 0.2, 0.2]),
+            ("LeftLeg", [0, -0.1, 0], [0.4, 0.2, 0.2]),
             ("LeftLowerLeg", [0, 0, -0.5], [0.2, 0.2, 1]),
-            ("RightLeg", [0.5, 0, 0], [1, 0.2, 0.2]),
+            ("RightLeg", [0, 0.1, 0], [0.4, 0.2, 0.2]),
             ("RightLowerLeg", [0, 0, -0.5], [0.2, 0.2, 1]),
         ]
 
