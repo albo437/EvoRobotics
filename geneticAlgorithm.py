@@ -1,6 +1,3 @@
-import evosax
-import jax
-import jax.numpy as jnp
 from solution import SOLUTION
 import constants as c
 import numpy as np
