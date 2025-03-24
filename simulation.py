@@ -7,10 +7,24 @@ from world import WORLD
 from robot import ROBOT
 import os
 import numpy as np
-import shutil  # Import shutil for moving files
+import shutil
 
 class SIMULATION:
+    """
+    Class that setups the simulation environment and runs the simulation.
+    """
     def __init__(self, steps, directOrGui, solutionID):
+        """
+        Initialize the simulation environment and run the simulation.
+
+        Parameters:
+        steps (int): The number of steps the simulation will run.
+        directOrGui (str): The mode of the simulation, it can be "DIRECT" or "GUI".
+        solutionID (int): The ID of the solution.
+
+        Returns:
+        None
+        """
         self.myID = solutionID
         self.steps = steps
         self.directOrGui = directOrGui
@@ -31,6 +45,9 @@ class SIMULATION:
             os.remove(world_file)
     
     def Run(self):
+        """
+        Run the simulation for a number of steps given by self.steps.
+        """
         self.heights = np.zeros(self.steps)
         self.tilt = np.zeros(self.steps)
         for t in range(self.steps):
@@ -46,6 +63,16 @@ class SIMULATION:
                 print(self.robot.sensors["cap"].values[t])
 
     def getFitness(self):
+        """
+        Get the fitness of the robot based on its distance to the box.
+        The fitness is written to a file.
+
+        Parameters:
+        None
+
+        Returns:
+        None
+        """
         # Distance to box
         robotPosition = p.getBasePositionAndOrientation(self.robot.robotId)[0][0:2]
         boxPosition = p.getBasePositionAndOrientation(1)[0][0:2]

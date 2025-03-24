@@ -1,4 +1,4 @@
-import numpy as np
+# Description: This file contains the constants used in the simulation.
 gravity = 9.8
 phaseOffset = 0
 maxForce = 500

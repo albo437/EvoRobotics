@@ -5,16 +5,39 @@ import time
 import constants as c
 
 class SOLUTION:
+    """
+    Class that contains a robot's brain weights and its fitness.
+    It also contains the methods to generate the world, body and brain of the robot.
+    """
     def __init__(self, nextAvailableID, generation):
+        """
+        Initialize the solution with random weights for the brain.
+
+        Parameters:
+        nextAvailableID (int): The next available ID for the solution.
+        generation (int): The generation of the solution.
+
+        Returns:
+        None
+        """
         self.myID = nextAvailableID
         self.weightsToHidden = np.random.uniform(-1, 1, (c.numSensorNeurons, c.numHiddenNeurons))
         self.weightsToMotor = np.random.uniform(-1, 1, (c.numHiddenNeurons, c.numMotorNeurons))
         self.fitnessList = []
         self.generation = generation
         self.fitness = 0
-        self.flattenedWeights = np.concatenate((self.weightsToHidden.flatten(), self.weightsToMotor.flatten()))
     
     def Start_Simulation(self, directOrGui):
+        """
+        Start the simulation of the robot by generating the world, body and brain of the robot.
+        The simulation is started in a new process that runs the simulate.py script.
+
+        Parameters:
+        directOrGui (str): The mode of the simulation, it can be "DIRECT" or "GUI".
+
+        Returns:
+        None
+        """
         self.generateWorld()
         self.generateBody()
         self.generateBrain()
@@ -24,6 +47,15 @@ class SOLUTION:
             os.system(f"python3 simulate.py {directOrGui} {self.myID}")
     
     def Wait_For_Simulation_To_End(self):
+        """
+        Wait for the simulation to end and read the fitness value from the fitness file.
+
+        Parameters:
+        None
+
+        Returns:
+        None
+        """
         fitnessFileName = f'fitness{self.myID}.txt'
 
         while not os.path.exists(fitnessFileName):
@@ -124,11 +156,6 @@ class SOLUTION:
                 pyrosim.Send_Synapse(sourceNeuronName=i + c.numSensorNeurons, targetNeuronName=j + neuronCount, weight=self.weightsToMotor[i, j])
 
         pyrosim.End()
-
-    def Mutate(self):
-        row = np.random.randint(c.numSensorNeurons)
-        column = np.random.randint(c.numMotorNeurons)
-        self.weightsToHidden[row, column] = np.random.uniform(-1, 1)
     
     def Set_ID(self, nextAvailableID):
         self.myID = nextAvailableID

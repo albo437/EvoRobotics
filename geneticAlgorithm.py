@@ -8,7 +8,21 @@ import os
 
 
 class GENETIC_ALGORITHM:
+    """
+    Class that contains the genetic
+    algorithm to evolve the weights of the robot's brain.
+    """
     def __init__(self):
+        """
+        Deletes all files from previous runs, setup the genetic algorithm parameters, 
+        generate the initial population and evaluate it.
+
+        Parameters:
+        None
+
+        Returns:
+        None
+        """
         os.system("rm fitness*.txt")
         os.system("rm brain*.nndf")
         os.system("rm body*.urdf")
@@ -23,11 +37,31 @@ class GENETIC_ALGORITHM:
         self.Evaluate(self.parents)
     
     def Evolve(self):
+        """
+        Evolve the population for a number of generations given by c.numGenerations,
+        each step of the evolution is done by calling the Evolve_For_One_Generation method.
+
+        Parameters:
+        None
+
+        Returns:
+        None
+        """
         for i in range(c.numGenerations):
             self.Evolve_For_One_Generation(i)
         
     
     def Evolve_For_One_Generation(self, i):
+        """
+        Evolve the population for one generation, this is done by generating offspring from the parents,
+        evaluating the offspring, selecting the best individuals and updating the parents list.
+
+        Parameters:
+        i (int): The current generation number.
+
+        Returns:
+        None
+        """
         self.generateOffspring(i)
         self.Evaluate(self.children)
         self.Select()
@@ -42,6 +76,16 @@ class GENETIC_ALGORITHM:
 
     
     def generateOffspring(self, i):
+        """
+        Generate offspring from the parents using Simulated Binary Crossover and Polynomial Mutation.
+        2 children are generated from each pair of parents.
+
+        Parameters:
+        i (int): The current generation number.
+
+        Returns:
+        None
+        """
         self.children = []
         for i in range(c.childrenSize):
             # Select two random parents
@@ -72,18 +116,10 @@ class GENETIC_ALGORITHM:
             child1.weightsToHidden = child1ToHiddenWeights
             child1.weightsToMotor = child1ToMotorWeights
 
-            #test make all values 0
-            # child1.weightsToHidden = np.zeros((c.numSensorNeurons, c.numHiddenNeurons))
-            # child1.weightsToMotor = np.zeros((c.numHiddenNeurons, c.numMotorNeurons))
-          
-
             self.nextAvailableID += 1
             child2 = SOLUTION(self.nextAvailableID, i)
             child2.weightsToHidden = child2ToHiddenWeights
-            child2.weightsToMotor = child2ToMotorWeights
-
-            # child2.weightsToHidden = np.zeros((c.numSensorNeurons, c.numHiddenNeurons))
-            # child2.weightsToMotor = np.zeros((c.numHiddenNeurons, c.numMotorNeurons))     
+            child2.weightsToMotor = child2ToMotorWeights   
             
             self.nextAvailableID += 1
 
@@ -91,7 +127,17 @@ class GENETIC_ALGORITHM:
             self.children.append(child2)
             
     def SBX(self, parent1weights, parent2weights):
-        # Simulated Binary Crossover
+        """
+        Perform Simulated Binary Crossover on two parent weight matrices.
+
+        Parameters:
+        parent1weights (numpy array): The weight matrix of the first parent.
+        parent2weights (numpy array): The weight matrix of the second parent.
+
+        Returns:
+        child1Weights (numpy array): The weight matrix of the first child.
+        child2Weights (numpy array): The weight matrix of the second child.
+        """
         child1Weights = parent1weights
         child2Weights = parent2weights
 
@@ -113,7 +159,15 @@ class GENETIC_ALGORITHM:
         return child1Weights, child2Weights
     
     def polynomialMutation(self, childWeights):
-        # Polynomial Mutation
+        """
+        Perform Polynomial Mutation on a weight matrix.
+
+        Parameters:
+        childWeights (numpy array): The weight matrix of the child.
+
+        Returns:
+        childWeights (numpy array): The weight matrix of the child after mutation.
+        """
         eta_m = 20
         for i in range(childWeights.shape[0]):
             for j in range(childWeights.shape[1]):
@@ -129,6 +183,16 @@ class GENETIC_ALGORITHM:
         return childWeights
 
     def Evaluate(self, solutions):
+        """
+        Evaluate the fitness of the solutions by running the simulation for each solution 10 times.
+        The simulation is run 10 times so that the final fitness reflects the average performance of the solution.
+
+        Parameters:
+        solutions (list): A list of SOLUTION objects to evaluate.
+
+        Returns:
+        None
+        """
         for i in range(10):
             for individual in solutions:
                 individual.Start_Simulation("DIRECT")
@@ -136,15 +200,34 @@ class GENETIC_ALGORITHM:
                 individual.Wait_For_Simulation_To_End()
     
     def Select(self):
+        """
+        Select the c.populationSize best individuals from the combined parent + children population based on their fitness.
+
+        Parameters:
+        None
+
+        Returns:
+        None
+        """
         population = self.parents + self.children
         population.sort(key=lambda x: x.fitness)
         self.parents = population[:c.populationSize]    
     
     def Show_Best(self):
+        """
+        Show the best solution in a GUI simulation."
+        """
         print(self.parents[0].fitnessList)
         print(self.parents[0].fitness)
         self.parents[0].Start_Simulation("GUI")
 
     def Get_Best(self):
+        """
+        Get the weights of the best solution.
+
+        Returns:
+        weightsToHidden (numpy array): The weights of the best solution from the input layer to the hidden layer.
+        weightsToMotor (numpy array): The weights of the best solution from the hidden layer to the motor layer.
+        """
         return self.parents[0].weightsToHidden, self.parents[0].weightsToMotor
 
