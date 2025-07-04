@@ -190,7 +190,7 @@ class GENETIC_ALGORITHM:
         Returns:
         None
         """
-        for i in range(10):
+        for i in range(c.simulationRuns):
             for individual in solutions:
                 individual.Start_Simulation("DIRECT")
             for individual in solutions:

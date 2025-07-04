@@ -14,3 +14,5 @@ populationSize = 20
 childrenSize = 10
 bounds = [-1, 1]
 crossoverRate = 1
+
+simulationRuns = 10

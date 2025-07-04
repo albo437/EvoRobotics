@@ -16,6 +16,7 @@ from pyrosim.joint import JOINT
 
 import numpy as np
 
+
 SDF_FILETYPE  = 0
 
 URDF_FILETYPE = 1
@@ -46,21 +47,25 @@ def End_Model():
 
 def Get_Touch_Sensor_Value_For_Link(linkName):
 
+
     touchValue = -1.0
 
     desiredLinkIndex = linkNamesToIndices[linkName]
 
     pts = p.getContactPoints()
 
-    for pt in pts:
+    try:
+        for pt in pts:
 
-        linkIndex = pt[4]
+            linkIndex = pt[4]
 
-        if ( linkIndex == desiredLinkIndex ):
+            if ( linkIndex == desiredLinkIndex ):
 
-            touchValue = 1.0
+                touchValue = 1.0
 
-    return touchValue
+        return touchValue
+    except Exception:
+        return None
 
 def Get_Ray_Sensor_Value_For_Link(bodyID, linkName):
     bodyID = 2

@@ -8,6 +8,7 @@ from robot import ROBOT
 import os
 import numpy as np
 import shutil
+from sensor import SENSOR
 
 class SIMULATION:
     """
@@ -61,6 +62,13 @@ class SIMULATION:
             # Print cap sensor value every 100 steps
             if t % 100 == 0 and self.directOrGui != "DIRECT":
                 print(self.robot.sensors["cap"].values[t])
+            # Print sensors with None values
+            if t % 1000 == 0:
+                none_count = 0
+                for sensor in self.robot.sensors.values():
+                    if type(sensor) is SENSOR:
+                        none_count += sensor.noneCount
+                print("None in sensor values",none_count)
 
     def getFitness(self):
         """
