@@ -25,7 +25,7 @@ class GENETIC_ALGORITHM:
         os.system("rm body*.urdf")
         os.system("rm world*.sdf")
         self.crossoverRate = 1
-        self.mutationRate = 1/(c.numSensorNeurons + c.numHiddenNeurons)
+        self.mutationRate = 0.01
         self.parents = []
         self.nextAvailableID = 0
         for i in range(c.populationSize):

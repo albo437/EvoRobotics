@@ -53,22 +53,22 @@ class SIMULATION:
         self.tilt = np.zeros(self.steps)
         for t in range(self.steps):
             if self.directOrGui != "DIRECT":
-                time.sleep(1/60)
+                time.sleep(1/120)
             p.stepSimulation()
             self.robot.Sense(t)
             self.robot.Think()
             self.robot.Act()
 
-            # Print cap sensor value every 100 steps
-            if t % 100 == 0 and self.directOrGui != "DIRECT":
-                print(self.robot.sensors["cap"].values[t])
-            # Print sensors with None values
-            if t % 1000 == 0:
-                none_count = 0
-                for sensor in self.robot.sensors.values():
-                    if type(sensor) is SENSOR:
-                        none_count += sensor.noneCount
-                print("None in sensor values",none_count)
+            # # Print cap sensor value every 100 steps
+            # if t % 100 == 0 and self.directOrGui != "DIRECT":
+            #     print(self.robot.sensors["cap"].values[t])
+            # # Print sensors with None values
+            # if t % 1000 == 0:
+            #     none_count = 0
+            #     for sensor in self.robot.sensors.values():
+            #         if type(sensor) is SENSOR:
+            #             none_count += sensor.noneCount
+            #     print("None in sensor values",none_count)
 
     def getFitness(self):
         """
@@ -91,7 +91,7 @@ class SIMULATION:
         tmp_filename = f"tmp{self.myID}.txt"
         fitness_filename = f"fitness{self.myID}.txt"
 
-        fitness = distance
+        fitness = distance - 100 * np.sum(self.robot.sensors["cap"].values) / c.steps
         
         with open(tmp_filename, "a") as f:
             f.write(str(fitness) + "\n")

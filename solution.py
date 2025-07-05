@@ -136,13 +136,13 @@ class SOLUTION:
     def generateBrain(self):
         pyrosim.Start_NeuralNetwork(f"brain{self.myID}.nndf")
 
-        for i, linkName in enumerate(["BackLeg", "FrontLeg", "LeftLeg", "RightLeg", "BackLowerLeg", "FrontLowerLeg", "LeftLowerLeg", "RightLowerLeg", "cap"]):
+        for i, linkName in enumerate(["BackLeg", "FrontLeg", "LeftLeg", "RightLeg","BackLowerLeg", "FrontLowerLeg", "LeftLowerLeg", "RightLowerLeg", "cap"]):
             pyrosim.Send_Sensor_Neuron(name=i, linkName=linkName)
 
-        for i in range(9, 15):
+        for i in range(c.numSensorNeurons, c.numSensorNeurons + c.numHiddenNeurons):
             pyrosim.Send_Hidden_Neuron(name=i)
 
-        for i, jointName in enumerate(["Torso_BackLeg", "Torso_FrontLeg", "Torso_LeftLeg", "Torso_RightLeg", "BackLeg_BackLowerLeg", "FrontLeg_FrontLowerLeg", "LeftLeg_LeftLowerLeg", "RightLeg_RightLowerLeg"], start=15):
+        for i, jointName in enumerate(["Torso_BackLeg", "Torso_FrontLeg", "Torso_LeftLeg", "Torso_RightLeg", "BackLeg_BackLowerLeg", "FrontLeg_FrontLowerLeg", "LeftLeg_LeftLowerLeg", "RightLeg_RightLowerLeg"], start=c.numSensorNeurons + c.numHiddenNeurons):
             pyrosim.Send_Motor_Neuron(name=i, jointName=jointName)
 
         neuronCount = c.numSensorNeurons
