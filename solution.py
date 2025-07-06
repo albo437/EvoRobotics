@@ -22,10 +22,13 @@ class SOLUTION:
         """
         self.myID = nextAvailableID
         self.weightsToHidden = np.random.uniform(-1, 1, (c.numSensorNeurons, c.numHiddenNeurons))
+        self.weightsToHidden2 = np.random.uniform(-1, 1, (c.numHiddenNeurons, c.numHiddenNeurons2))
         self.weightsToMotor = np.random.uniform(-1, 1, (c.numHiddenNeurons, c.numMotorNeurons))
         self.fitnessList = []
         self.generation = generation
         self.fitness = 0
+        self.distanceList = []
+        self.distance = 0
     
     def Start_Simulation(self, directOrGui):
         """
@@ -62,10 +65,14 @@ class SOLUTION:
             time.sleep(0.01)
 
         content = None
+        # Read the fitness file, it contains a single line with n values separeted by commas.
+        # We will read it multiple times in case the file is not ready yet.
         for _ in range(10):  
             try:
                 with open(fitnessFileName, "r") as f:
-                    content = f.read().strip()
+                    content = f.readline().strip()
+                if content:
+                    content = content.split(",")
                 break  
             except PermissionError:
                 time.sleep(0.05)  
@@ -74,12 +81,24 @@ class SOLUTION:
             raise PermissionError(f"Could not read {fitnessFileName} after multiple attempts.")
 
         try:
-            fitness_value = float(content)
+            for i in range(len(content)):
+                content[i] = float(content[i])
         except ValueError:
             raise ValueError(f"Invalid number in {fitnessFileName}: {content}")
 
+        for i in range(len(content)):
+            try:
+                content[i] = float(content[i])
+            except ValueError:
+                raise ValueError(f"Invalid number in {fitnessFileName}: {content[i]}")
+        
+        fitness_value = np.sum(content)
+
         self.fitnessList.append(fitness_value)
         self.fitness = np.mean(self.fitnessList)
+
+        self.distanceList.append(content[0])
+        self.distance = np.mean(self.distanceList)
 
         time.sleep(0.01)  
         try:
@@ -136,24 +155,38 @@ class SOLUTION:
     def generateBrain(self):
         pyrosim.Start_NeuralNetwork(f"brain{self.myID}.nndf")
 
-        for i, linkName in enumerate(["BackLeg", "FrontLeg", "LeftLeg", "RightLeg","BackLowerLeg", "FrontLowerLeg", "LeftLowerLeg", "RightLowerLeg", "cap"]):
+        for i, linkName in enumerate(["BackLeg", "FrontLeg", "LeftLeg", "RightLeg","BackLowerLeg", 
+                                      "FrontLowerLeg", "LeftLowerLeg", "RightLowerLeg", "cap"]):
             pyrosim.Send_Sensor_Neuron(name=i, linkName=linkName)
 
-        for i in range(c.numSensorNeurons, c.numSensorNeurons + c.numHiddenNeurons):
+        for i in range(c.numSensorNeurons, c.numSensorNeurons + c.numHiddenNeurons + c.numHiddenNeurons2):
             pyrosim.Send_Hidden_Neuron(name=i)
 
-        for i, jointName in enumerate(["Torso_BackLeg", "Torso_FrontLeg", "Torso_LeftLeg", "Torso_RightLeg", "BackLeg_BackLowerLeg", "FrontLeg_FrontLowerLeg", "LeftLeg_LeftLowerLeg", "RightLeg_RightLowerLeg"], start=c.numSensorNeurons + c.numHiddenNeurons):
+        for i, jointName in enumerate(["Torso_BackLeg", "Torso_FrontLeg", "Torso_LeftLeg", 
+                                       "Torso_RightLeg", "BackLeg_BackLowerLeg", "FrontLeg_FrontLowerLeg", 
+                                       "LeftLeg_LeftLowerLeg", "RightLeg_RightLowerLeg"], 
+                                       start=c.numSensorNeurons + c.numHiddenNeurons + c.numHiddenNeurons2):
             pyrosim.Send_Motor_Neuron(name=i, jointName=jointName)
 
+        # Connect sensor neurons to layer 1 of hidden neurons
         neuronCount = c.numSensorNeurons
         for i in range(c.numSensorNeurons):
             for j in range(c.numHiddenNeurons):
                 pyrosim.Send_Synapse(sourceNeuronName=i, targetNeuronName=j + neuronCount, weight=self.weightsToHidden[i, j])
 
+        # Connect layer 1 of hidden neurons to layer 2 of hidden neurons
         neuronCount += c.numHiddenNeurons
         for i in range(c.numHiddenNeurons):
+            for j in range(c.numHiddenNeurons2):
+                pyrosim.Send_Synapse(sourceNeuronName=i + c.numSensorNeurons, targetNeuronName=j + neuronCount, weight=self.weightsToHidden2[i, j])
+
+        # Connect layer 2 of hidden neurons to motor neurons
+        neuronCount += c.numHiddenNeurons2
+        for i in range(c.numHiddenNeurons2):
             for j in range(c.numMotorNeurons):
-                pyrosim.Send_Synapse(sourceNeuronName=i + c.numSensorNeurons, targetNeuronName=j + neuronCount, weight=self.weightsToMotor[i, j])
+                pyrosim.Send_Synapse(sourceNeuronName=i + c.numSensorNeurons + c.numHiddenNeurons, 
+                                     targetNeuronName=j + neuronCount, 
+                                     weight=self.weightsToMotor[i, j])
 
         pyrosim.End()
     

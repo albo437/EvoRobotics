@@ -93,17 +93,23 @@ class GENETIC_ALGORITHM:
             parent1ToHiddenWeights = self.parents[parent1Index].weightsToHidden
             parent2ToHiddenWeights = self.parents[parent2Index].weightsToHidden
 
+            parent1HiddenToHidden2Weights = self.parents[parent1Index].weightsToHidden2
+            parent2HiddenToHidden2Weights = self.parents[parent2Index].weightsToHidden2
+
             parent1ToMotorWeights = self.parents[parent1Index].weightsToMotor
             parent2ToMotorWeights = self.parents[parent2Index].weightsToMotor
 
             # Simulated Binary Crossover
             child1ToHiddenWeights, child2ToHiddenWeights = self.SBX(parent1ToHiddenWeights, parent2ToHiddenWeights)
-
             child1ToMotorWeights, child2ToMotorWeights = self.SBX(parent1ToMotorWeights, parent2ToMotorWeights)
+            child1HiddenToHidden2Weights, child2HiddenToHidden2Weights = self.SBX(parent1HiddenToHidden2Weights, parent2HiddenToHidden2Weights)
 
             # Mutate children
             child1ToHiddenWeights = self.polynomialMutation(child1ToHiddenWeights)
             child2ToHiddenWeights = self.polynomialMutation(child2ToHiddenWeights)
+
+            child1HiddenToHidden2Weights = self.polynomialMutation(child1HiddenToHidden2Weights)
+            child2HiddenToHidden2Weights = self.polynomialMutation(child2HiddenToHidden2Weights)
 
             child1ToMotorWeights = self.polynomialMutation(child1ToMotorWeights)
             child2ToMotorWeights = self.polynomialMutation(child2ToMotorWeights)
@@ -111,11 +117,13 @@ class GENETIC_ALGORITHM:
             # Create children
             child1 = SOLUTION(self.nextAvailableID, i)
             child1.weightsToHidden = child1ToHiddenWeights
+            child1.weightsToHidden2 = child1HiddenToHidden2Weights
             child1.weightsToMotor = child1ToMotorWeights
 
             self.nextAvailableID += 1
             child2 = SOLUTION(self.nextAvailableID, i)
             child2.weightsToHidden = child2ToHiddenWeights
+            child2.weightsToHidden2 = child2HiddenToHidden2Weights
             child2.weightsToMotor = child2ToMotorWeights   
             
             self.nextAvailableID += 1

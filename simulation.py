@@ -91,10 +91,10 @@ class SIMULATION:
         tmp_filename = f"tmp{self.myID}.txt"
         fitness_filename = f"fitness{self.myID}.txt"
 
-        fitness = distance - 100 * np.sum(self.robot.sensors["cap"].values) / c.steps
+        fitness = str(distance) #+","+ str(- 100 * np.sum(self.robot.sensors["cap"].values) / c.steps)
         
         with open(tmp_filename, "a") as f:
-            f.write(str(fitness) + "\n")
+            f.write(fitness + "\n")
         
         if os.path.exists(tmp_filename):
             shutil.move(tmp_filename, fitness_filename)

@@ -7,6 +7,7 @@ steps = 3000
 numSensorNeurons = 9
 numMotorNeurons = 8
 numHiddenNeurons = 6
+numHiddenNeurons2 = 6
 motorJointRange = 0.5
 
 numGenerations = 20

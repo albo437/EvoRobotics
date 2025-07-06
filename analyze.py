@@ -1,10 +1,13 @@
-import numpy as np
-import matplotlib.pyplot as plt
+from geneticAlgorithm import GENETIC_ALGORITHM
 
-backLegSensorValues = np.load('data/backLegSensorValues.npy')
-frontLegSensorValues = np.load('data/frontLegSensorValues.npy')
-# Plot the data
-plt.plot(backLegSensorValues, label='Back Leg')
-plt.plot(frontLegSensorValues, label='Front Leg')
-plt.legend()
-plt.show()
+# Create 10 instances of the GENETIC_ALGORITHM class and store them in a list
+ga_instances = [GENETIC_ALGORITHM() for _ in range(10)]
+# Evolve each instance
+for ga in ga_instances:
+    ga.Evolve()
+# Collect the fitness values from each instance
+distance_values = [ga.parents[0].distance for ga in ga_instances]
+
+# Append the fitness values to a text file
+with open("stats.txt", "a") as f:
+    f.write(distance_values.__str__() + "\n")
