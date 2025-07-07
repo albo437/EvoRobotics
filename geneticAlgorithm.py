@@ -234,5 +234,5 @@ class GENETIC_ALGORITHM:
         weightsToHidden (numpy array): The weights of the best solution from the input layer to the hidden layer.
         weightsToMotor (numpy array): The weights of the best solution from the hidden layer to the motor layer.
         """
-        return self.parents[0].weightsToHidden, self.parents[0].weightsToMotor
+        return self.parents[0].weightsToHidden, self.parents[0].weightsToHidden2, self.parents[0].weightsToMotor
 
